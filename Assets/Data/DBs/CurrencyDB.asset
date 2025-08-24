@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed18f9eb958407ba166cfca12d4d681, type: 3}
+  m_Name: CurrencyDB
+  m_EditorClassIdentifier: 
+  currencies:
+  - {fileID: 11400000, guid: 30dcfe99207630b448012fd23fc56a69, type: 2}
+  - {fileID: 11400000, guid: 847f940d42a129d4fa7beba0afca3173, type: 2}
+  - {fileID: 11400000, guid: eec94ceb178220544853ebf440db5c9c, type: 2}
+  newCurrencyName: emerald
+  newCurrencyType: 1
+  newCurrencyDescription: 
+  newCurrencyIcon: {fileID: -1416422746511431786, guid: 32696142ce920e3458ce9e82c38696ef, type: 3}

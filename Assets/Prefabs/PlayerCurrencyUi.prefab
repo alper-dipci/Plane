@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1330460202369403319}
   - component: {fileID: 4383601281981786624}
+  - component: {fileID: -577318337185917657}
   m_Layer: 5
   m_Name: PlayerCurrencyUi
   m_TagString: Untagged
@@ -64,6 +65,21 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &-577318337185917657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779325259439507476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f4609ec77474dd49f51f005b1547977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currencyImage: {fileID: 3717384345156206030}
+  currencyText: {fileID: 5686464986536229091}
+  currencyType: 0
 --- !u!1 &795305026015879830
 GameObject:
   m_ObjectHideFlags: 0

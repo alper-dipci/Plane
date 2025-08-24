@@ -20,24 +20,33 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: effectsPerLevel
-      Entry: 7
-      Data: 0|System.Collections.Generic.List`1[[UpgradeEffect, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   upgradeName: 
   description: 
-  upgradeIcon: {fileID: 0}
-  requiredUpgrades: []
-  playerLevelRequired: 1
-  maxLevel: 5
-  costPerLevel: []
+  upgradeIcon: {fileID: -8633190060322573436, guid: fc850fd244143d2499579c464453f6b0, type: 3}
+  effectsPerLevel:
+  - costData:
+    - currencyType: 0
+      amount: 0
+    effects:
+    - rid: 4024268088656265283
+  - costData:
+    - currencyType: 0
+      amount: 0
+    effects:
+    - rid: 4024268088656265284
+  references:
+    version: 2
+    RefIds:
+    - rid: 4024268088656265283
+      type: {class: PlayerStatsUpgrade, ns: _Scripts.Upgrades.UpgradeEffects, asm: Assembly-CSharp}
+      data:
+        StatType: 0
+        Condition: 0
+        Value: 1
+    - rid: 4024268088656265284
+      type: {class: PlayerStatsUpgrade, ns: _Scripts.Upgrades.UpgradeEffects, asm: Assembly-CSharp}
+      data:
+        StatType: 0
+        Condition: 1
+        Value: 2

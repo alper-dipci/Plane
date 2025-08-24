@@ -3,7 +3,5 @@ public enum CurrencyType
 {
     Gold,
     Silver,
-    Experience,
-    UpgradePoints,
-    Gems
+    Emerald,
 }
