@@ -35,6 +35,16 @@ MonoBehaviour:
       amount: 0
     effects:
     - rid: 4024268088656265284
+  - costData:
+    - currencyType: 0
+      amount: 0
+    effects:
+    - rid: 4024268092074623043
+  - costData:
+    - currencyType: 0
+      amount: 0
+    effects:
+    - rid: 4024268092074623044
   references:
     version: 2
     RefIds:
@@ -50,3 +60,15 @@ MonoBehaviour:
         StatType: 0
         Condition: 1
         Value: 2
+    - rid: 4024268092074623043
+      type: {class: PlayerStatsUpgrade, ns: _Scripts.Upgrades.UpgradeEffects, asm: Assembly-CSharp}
+      data:
+        StatType: 0
+        Condition: 0
+        Value: 0
+    - rid: 4024268092074623044
+      type: {class: PlayerStatsUpgrade, ns: _Scripts.Upgrades.UpgradeEffects, asm: Assembly-CSharp}
+      data:
+        StatType: 0
+        Condition: 0
+        Value: 0
