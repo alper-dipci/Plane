@@ -1,72 +1,83 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using _Scripts.Enums;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace _Scripts.Upgrades
 {
+    [RequireComponent(typeof(Collider2D))]
     public class UpgradeNode : MonoBehaviour
     {
-        [SerializeField] private UpgradeNodeSO upgradeNodeSo;
-        [SerializeField] private Button button;
-        [SerializeField] private Image lockedImage;
-        [SerializeField] private Image progressImage;
-        [SerializeField] private Image maxedImage;
+        [Header("References")] [SerializeField]
+        private UpgradeNodeSO upgradeNodeSo;
 
-        [ReadOnly] public int currentLevel;
+        [SerializeField] private SpriteRenderer lockedSprite;
+        [SerializeField] private SpriteRenderer progressSprite;
+        [SerializeField] private SpriteRenderer maxedSprite;
+        [SerializeField] private LineRenderer lineRenderer;
+
+        public int currentLevel;
+
+        [OnValueChanged(nameof(UpdateLines))] public List<UpgradeNode> childNodes = new();
+
+        private Dictionary<UpgradeNode, LineRenderer> _connectionLines = new();
         
-        public UpgradeNode parentNode;
-        public List<UpgradeNode> childNodes = new List<UpgradeNode>();
-        public List<Image> connectionLines; 
+        public float duration = 1f;
 
-        private void Awake()
+        public void UpdateLines()
         {
-            button.onClick.AddListener(OnButtonClicked);
-            UpdateVisual();
-            
-            if(parentNode != null && !parentNode.IsUnlocked())
-                HideNode();
-            else
-                ShowNode();
+            // Remove old lines
+            foreach (var connectionLine in _connectionLines.Values)
+            {
+                if (connectionLine != null)
+                    DestroyImmediate(connectionLine.gameObject);
+            }
+
+            _connectionLines.Clear();
+
+            // Create new lines
+            foreach (var node in childNodes)
+            {
+                if (node == null) continue;
+                var line = Instantiate(lineRenderer, transform.position, Quaternion.identity, transform);
+                line.SetPosition(0, transform.position);
+                line.SetPosition(1, node.transform.position);
+                _connectionLines[node] = line;
+            }
         }
 
-        private void OnButtonClicked()
-        {
-            TryUpgrade();
-        }
+        private void OnMouseDown() => TryUpgrade();
+
+        private void OnMouseEnter() =>
+            UpgradeTreeController.Instance.OnSelectedNodeChanged(this);
 
         private void TryUpgrade()
         {
-            // Check if we can upgrade
             if (currentLevel >= upgradeNodeSo.MaxLevel)
                 return;
 
             var upgradeData = upgradeNodeSo.GetUpgradeData(currentLevel + 1);
             var cost = upgradeData.costData;
-            // Check if we have enough currency
 
-            // Deduct currency
+            // TODO: currency kontrolü yap
 
-            // upgrade our level
+            // TODO: currency düs
+
             currentLevel++;
 
-            // Apply the upgrade effect
             var effects = upgradeData.effects;
             foreach (var effect in effects)
                 effect.ApplyEffect();
 
-            //update visual
             UpdateVisual();
-            
-            // If we just unlocked the first level, show child nodes
-            if (currentLevel == 1) 
+
+
+            foreach (var child in childNodes)
             {
-                foreach (var child in childNodes)
-                {
-                    child.ShowNode();
-                }
+                child.ShowNode();
             }
         }
 
@@ -76,33 +87,34 @@ namespace _Scripts.Upgrades
             switch (progressState)
             {
                 case UpgradeNodeProgressState.Locked:
-                    lockedImage.enabled = true;
-                    progressImage.fillAmount = 1;
-                    maxedImage.enabled = false;
-                    connectionLines.ForEach(line => line.enabled = false);
+                    lockedSprite.enabled = true;
+                    if (progressSprite != null)
+                        progressSprite.enabled = false;
+                    maxedSprite.enabled = false;
+                    _connectionLines.ForEach(nodeLinePair => nodeLinePair.Value.enabled = false);
                     break;
+
                 case UpgradeNodeProgressState.Maxed:
-                    lockedImage.enabled = false;
-                    progressImage.fillAmount = 0;
-                    maxedImage.enabled = true;
-                    connectionLines.ForEach(line => line.enabled = true);
+                    lockedSprite.enabled = false;
+                    if (progressSprite != null)
+                        progressSprite.enabled = false;
+                    maxedSprite.enabled = true;
+                    _connectionLines.ForEach(nodeLinePair => nodeLinePair.Value.enabled = true);
                     break;
+
                 case UpgradeNodeProgressState.Unlocked:
-                    lockedImage.enabled = false;
-                    progressImage.fillAmount = 1 - ((float)currentLevel / upgradeNodeSo.MaxLevel);
-                    maxedImage.enabled = false;
-                    connectionLines.ForEach(line => line.enabled = true);
+                    lockedSprite.enabled = false;
+                    if (progressSprite != null)
+                        progressSprite.enabled = true;
+                    maxedSprite.enabled = false;
+                    _connectionLines.ForEach(nodeLinePair => nodeLinePair.Value.enabled = true);
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private void OnDestroy()
-        {
-            button.onClick.RemoveListener(OnButtonClicked);
-        }
-        
         public bool IsUnlocked()
         {
             return currentLevel > 0;
@@ -111,14 +123,60 @@ namespace _Scripts.Upgrades
         public void ShowNode()
         {
             gameObject.SetActive(true);
-            connectionLines.ForEach(line => line.enabled = true);
+            _connectionLines.ForEach(nodeLinePair =>nodeLinePair.Value.enabled = true);
             UpdateVisual();
         }
+
         public void HideNode()
         {
             gameObject.SetActive(false);
-            connectionLines.ForEach(line => line.enabled = false);
+            _connectionLines.ForEach(nodeLinePair => nodeLinePair.Value.enabled = false);
         }
+
+        [Button]
+        public void ShowNodeVisual()
+        {
+            var material = this.GetComponent<SpriteRenderer>().material;
+            StartCoroutine(ShowMaterialCoroutine(material));
+        }
+        
+        [Button]
+        public void HideNodeVisual()
+        {
+            var material = this.GetComponent<SpriteRenderer>().material;
+            StartCoroutine(HideMaterialCoroutine(material));
+        }
+        private IEnumerator ShowMaterialCoroutine(Material material)
+        {
+            float elapsed = 0f;
+            var dissolve = material.GetFloat("_DisolveAmount");
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                material.SetFloat("_DisolveAmount", Mathf.Lerp(dissolve, 0f, t));
+                yield return null;
+            }
+            material.SetFloat("_DisolveAmount", 0);
+
+        }
+        private IEnumerator HideMaterialCoroutine(Material material)
+        {
+            float elapsed = 0f;
+            var dissolve = material.GetFloat("_DisolveAmount");
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                material.SetFloat("_DisolveAmount", Mathf.Lerp(dissolve, 1f, t));
+                yield return null;
+            }
+            material.SetFloat("_DisolveAmount", 1);
+        }
+        
+        
 
         public UpgradeNodeProgressState GetProgressState()
         {
