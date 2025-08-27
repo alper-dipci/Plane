@@ -6,6 +6,7 @@ namespace _Scripts.Upgrades
 {
     public class UpgradeTreeController : SingletonMonoBehaviour<UpgradeTreeController>
     {
+        protected override bool _isPermanent => false;
         [SerializeField] private GameObject selectedNodeIndicator;
         [SerializeField] private Vector2 indicatorOffset;
          

@@ -25,8 +25,11 @@ namespace _Scripts.Upgrades
 
         private Dictionary<UpgradeNode, LineRenderer> _connectionLines = new();
         
-        public float duration = 1f;
+        public float dissolveDuration = 1f;
+        public float outlineDuration = .1f;
+        public float outlineThickness = 0.1f;
 
+        private Coroutine _showOutlineCoroutine;
         public void UpdateLines()
         {
             // Remove old lines
@@ -51,8 +54,19 @@ namespace _Scripts.Upgrades
 
         private void OnMouseDown() => TryUpgrade();
 
-        private void OnMouseEnter() =>
-            UpgradeTreeController.Instance.OnSelectedNodeChanged(this);
+        private void OnMouseEnter()
+        {
+            var material = GetComponent<SpriteRenderer>().material;
+            material.SetFloat("_Thickness", outlineThickness);
+            //UpgradeTreeController.Instance.OnSelectedNodeChanged(this);
+        }
+        
+        private void OnMouseExit()
+        {
+            var material = GetComponent<SpriteRenderer>().material;
+            material.SetFloat("_Thickness", 0);
+        }
+        
 
         private void TryUpgrade()
         {
@@ -151,10 +165,10 @@ namespace _Scripts.Upgrades
             float elapsed = 0f;
             var dissolve = material.GetFloat("_DisolveAmount");
 
-            while (elapsed < duration)
+            while (elapsed < dissolveDuration)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / duration;
+                float t = elapsed / dissolveDuration;
                 material.SetFloat("_DisolveAmount", Mathf.Lerp(dissolve, 0f, t));
                 yield return null;
             }
@@ -166,10 +180,10 @@ namespace _Scripts.Upgrades
             float elapsed = 0f;
             var dissolve = material.GetFloat("_DisolveAmount");
 
-            while (elapsed < duration)
+            while (elapsed < dissolveDuration)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / duration;
+                float t = elapsed / dissolveDuration;
                 material.SetFloat("_DisolveAmount", Mathf.Lerp(dissolve, 1f, t));
                 yield return null;
             }
